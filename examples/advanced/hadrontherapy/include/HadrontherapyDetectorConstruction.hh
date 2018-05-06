@@ -35,6 +35,8 @@
 #include "G4LogicalVolume.hh"
 #include "G4UnitsTable.hh"
 #include "HadrontherapyDetectorROGeometry.hh"
+#include "B1DetectorConstruction.hh"
+
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;

@@ -54,6 +54,7 @@
 #include "PassiveProtonBeamLine.hh"
 #include "TrentoPassiveProtonBeamLine.hh"
 #include "HadrontherapyMatrix.hh"
+#include "B1DetectorConstruction.hh"
 
 #include "G4SystemOfUnits.hh"
 
