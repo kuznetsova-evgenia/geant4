@@ -25,27 +25,38 @@
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
 #include "G4SubtractionSolid.hh"
-#include "HadrontherapyDetectorConstruction.hh"
-//#include "PhysicalConstants.hh"
+#include <assert.h>
 
 using namespace CLHEP;
 
+bool roEnabled = true;
+
 B1DetectorConstruction::B1DetectorConstruction()
-: //G4VUserDetectorConstruction(),
-  fScoringVolume(0)
-{  
-  static G4String ROGeometryName = "DetectorROGeometry";
-  HadrontherapyDetectorROGeometry* RO = 
-    new HadrontherapyDetectorROGeometry(ROGeometryName);
-    RO->Initialize(G4ThreeVector(100.*cm, 0*cm, 0*cm), 4*cm,4*cm,4*cm,10,10,10);
-  G4cout << "Going to register Parallel world...";
-  RegisterParallelWorld(RO);
-  G4cout << "... done" << G4endl; 
+{
+	if(roEnabled) {
+		static G4String ROGeometryName = "DetectorROGeometry";
+		RO = new HadrontherapyDetectorROGeometry(ROGeometryName);
+		G4cout << "Going to register Parallel world...";
+		RegisterParallelWorld(RO);
+		G4cout << "... done" << G4endl;
+	}
 }
 
-B1DetectorConstruction::~B1DetectorConstruction()
-{ ; }
-G4VPhysicalVolume* B1DetectorConstruction::Construct( )
+B1DetectorConstruction::~B1DetectorConstruction() {}
+
+G4VPhysicalVolume* B1DetectorConstruction::Construct()
+{
+	G4cout << "Constructing B1DetectorConstruction...\n";
+	G4VPhysicalVolume *world = ConstructVolumes();
+	assert(htdc == nullptr);
+	htdc.reset(new HadrontherapyDetectorConstruction(Envelope));
+	if(roEnabled) {
+		htdc->InitializeDetectorROGeometry(RO, htdc->GetDetectorToWorldPosition());
+	}
+	return world;
+}
+
+G4VPhysicalVolume* B1DetectorConstruction::ConstructVolumes( )
 {
 // Get nist material manager
   G4NistManager* nist = G4NistManager::Instance();
@@ -298,15 +309,6 @@ G4LogicalVolume * IC23_Mylar2_5um = new G4LogicalVolume(solidIC23_Mylar2_5um, 	 
 			 0,0,0);
 IC23_Mylar2_5um->SetVisAttributes(yellow);
 
-G4Box *solidPhantom= new G4Box("solidPhantom", 500*mm, 500.0*mm, 500.0*mm );
-G4LogicalVolume * Phantom = new G4LogicalVolume(solidPhantom, 	 //its solid
-			 water, 		 //its material
-			"Phantom" ,		 //its name
-			 0,0,0);
-
-Phantom->SetVisAttributes(green);
-
-
 // Physical Volumes ----  Single Positioned Placement,   Repeated Placement,   Slicing  --------------------------- 
 
 
@@ -328,7 +330,7 @@ G4RotationMatrix rotMatrixEnvelope;   // unit rotation matrix
 G4double angleEnvelope = 0.0*deg;   // rotational angle
 rotMatrixEnvelope.rotateX(angleEnvelope);  // rot matrix
 
-G4VPhysicalVolume *  Envelope= new G4PVPlacement( new G4RotationMatrix(rotMatrixEnvelope) ,        // Frame rotation 
+Envelope= new G4PVPlacement( new G4RotationMatrix(rotMatrixEnvelope) ,        // Frame rotation 
 		 G4ThreeVector(0.0*mm, 0.0*mm, 0.0*mm),
 		 "Envelope",   // 1st constructor its name 
 		 Box3x3x4m1,         //its logical volume 
@@ -534,6 +536,15 @@ G4VPhysicalVolume *  KapKewWindow_ph= new G4PVPlacement( new G4RotationMatrix(ro
 		 false,	//no boolean operation 
 		 0);	//copy number 
 
+ if(0) {
+G4Box *solidPhantom= new G4Box("solidPhantom", 500*mm, 500.0*mm, 500.0*mm );
+G4LogicalVolume * Phantom = new G4LogicalVolume(solidPhantom, 	 //its solid
+			 water, 		 //its material
+			"Phantom" ,		 //its name
+			 0,0,0);
+
+Phantom->SetVisAttributes(green);
+
 G4RotationMatrix rotMatrixPhantom_ph;   // unit rotation matrix
 G4double anglePhantom_ph = 0.0*deg;   // rotational angle
 rotMatrixPhantom_ph.rotateX(anglePhantom_ph);  // rot matrix
@@ -545,12 +556,7 @@ G4VPhysicalVolume *  Phantom_ph= new G4PVPlacement( new G4RotationMatrix(rotMatr
 		 Envelope,	//its mother volume 
 		 false,	//no boolean operation 
 		 0);	//copy number 
-
-              
-  // Set Phantom as scoring volume
-  //
-  fScoringVolume = Phantom;
-
+ }
 
 
 

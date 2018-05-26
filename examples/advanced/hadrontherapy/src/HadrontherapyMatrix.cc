@@ -77,6 +77,7 @@ HadrontherapyMatrix* HadrontherapyMatrix::GetInstance()
 // TODO A check on the parameters is required!
 HadrontherapyMatrix* HadrontherapyMatrix::GetInstance(G4int voxelX, G4int voxelY, G4int voxelZ, G4double mass)
 {
+	G4cout << "Resetting matrix to " << voxelX << "x" << voxelY << "x" << voxelZ;
     if (instance) delete instance;
     instance = new HadrontherapyMatrix(voxelX, voxelY, voxelZ, mass);
     instance -> Initialize();
@@ -376,7 +377,7 @@ void HadrontherapyMatrix::StoreDoseFluenceAscii(G4String file)
   
         G4AnalysisManager* Analysis = G4AnalysisManager::Instance();
         
-        Analysis ->SetVerboseLevel(1);
+        Analysis ->SetVerboseLevel(0);
         Analysis ->SetFirstHistoId(1);
         Analysis ->SetFirstNtupleId(1);
         Analysis ->OpenFile("Dose");
@@ -405,9 +406,9 @@ void HadrontherapyMatrix::StoreDoseFluenceAscii(G4String file)
                     // Write only not identically null data lines
                     
                     
-                    Analysis->FillNtupleIColumn(1,0, i);
-                    Analysis->FillNtupleIColumn(1,1, j);
-                    Analysis->FillNtupleIColumn(1,2, k);
+                    //Analysis->FillNtupleIColumn(1,0, i);
+                    //Analysis->FillNtupleIColumn(1,1, j);
+                    //Analysis->FillNtupleIColumn(1,2, k);
                     if (matrix[n])
                     {
                         ofs << G4endl;

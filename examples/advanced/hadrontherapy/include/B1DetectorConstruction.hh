@@ -34,6 +34,8 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
 #include "G4UnitsTable.hh"
+#include "HadrontherapyDetectorConstruction.hh"
+#include <memory>
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;
@@ -48,10 +50,13 @@ class B1DetectorConstruction : public G4VUserDetectorConstruction
 
     virtual G4VPhysicalVolume* Construct();
     
-    G4LogicalVolume* GetScoringVolume() const { return fScoringVolume; }
+	// G4LogicalVolume* GetScoringVolume() const { return fScoringVolume; }
 
   protected:
-    G4LogicalVolume*  fScoringVolume;
+	G4VPhysicalVolume* ConstructVolumes();
+	std::unique_ptr<HadrontherapyDetectorConstruction> htdc;
+	HadrontherapyDetectorROGeometry* RO;
+	G4VPhysicalVolume *Envelope;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

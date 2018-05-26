@@ -231,7 +231,7 @@ void HadrontherapyDetectorROGeometry::Construct()
 				      0,0,0);
   
   
-  
+  G4cout << "RODetector position " << detectorToWorldPosition << "\n";
   G4VPhysicalVolume *RODetectorPhys = new G4PVPlacement(0,
 							detectorToWorldPosition,RODetectorLog,
 							"RODetectorPhys",
